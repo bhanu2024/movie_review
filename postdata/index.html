@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Movie Review</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+    />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="jquery-3.1.1.min.js"></script>
+    <script src="knockout-3.4.2.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        var CustomerDetailsViewModel = function () {
+          var self = this;
+          self.EmailId = ko.observable("");
+          self.FirstName = ko.observable("");
+          self.LastName = ko.observable("");
+          self.SuccessMessage = ko.observable("");
+
+          self.SaveCustomerDetails = function () {
+            var CustomerDetails = {
+              EmailId: self.EmailId(),
+              FirstName: self.FirstName(),
+              LastName: self.LastName(),
+            };
+
+            $.ajax({
+              url: "https://wzgrnl8xsd.execute-api.ap-south-1.amazonaws.com/Dev/postcustomerdetails",
+              cache: false,
+              type: "POST",
+              contentType: "application/json; charset=utf-8",
+              data: ko.toJSON(CustomerDetails),
+              success: function (data) {
+                self.SuccessMessage(data), self.EmailId(""), self.FirstName("");
+              },
+            }).fail(function (xhr, textStatus, err) {
+              alert("Error happend " + err);
+            });
+          };
+        };
+
+        var viewModel = new CustomerDetailsViewModel();
+        ko.applyBindings(viewModel);
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <div class="right-side">
+          <div class="topic-text">Add Movie Review</div>
+          <form action="#">
+            <div class="input-box">
+              <input
+                type="text"
+                placeholder="Enter your name"
+                data-bind="value: FirstName"
+              />
+            </div>
+            <div class="input-box">
+              <input
+                type="text"
+                placeholder="Enter Movie Name"
+                data-bind="value: EmailId"
+              />
+            </div>
+            <div class="input-box">
+              <textarea
+                placeholder="Review Movie"
+                cols="50"
+                rows="10"
+                data-bind="value: LastName"
+              ></textarea>
+            </div>
+
+            <div class="input-box message-box"></div>
+            <div class="button">
+              <input
+                type="button"
+                value="Submit"
+                data-bind="click: $root.SaveCustomerDetails"
+              />
+              <span
+                style="color: darkolivegreen"
+                data-bind="text: SuccessMessage"
+              ></span>
+            </div>
+          </form>
+          <div class="button">
+            <a
+              style="text-decoration: none"
+              href="http://showmovies.s3-website.ap-south-1.amazonaws.com/"
+              >Search for movies</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
