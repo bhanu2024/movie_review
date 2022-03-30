@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="utf-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=PT+Sans:ital@1&display=swap"
+      rel="stylesheet"
+    />
+    <script src="jquery-3.1.1.min.js"></script>
+    <script src="knockout-3.4.2.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        var customerViewModel = function () {
+          var self = this;
+          self.firstName = ko.observable("");
+          self.lastName = ko.observable("");
+          self.emailId = ko.observable("");
+          self.searchKey = ko.observable("");
+
+          self.getCustomerDetails = function () {
+            $.ajax({
+              url: "https://xg400riofk.execute-api.ap-south-1.amazonaws.com/Dev/getcustomerdetailsbyemail",
+              cache: false,
+              type: "GET",
+              data: { EmailId: self.searchKey() },
+              success: function (data) {
+                self.emailId(data.Item.EmailId),
+                  self.firstName(data.Item.FirstName),
+                  self.lastName(data.Item.LastName);
+              },
+            });
+          };
+        };
+
+        var viewModel = new customerViewModel();
+        ko.applyBindings(viewModel);
+      });
+    </script>
+
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Open+Sans);
+
+      body {
+        background: #ccf2f4;
+        font-family: "PT Sans", sans-serif;
+      }
+
+      .search {
+        width: 100%;
+        position: relative;
+        display: flex;
+      }
+
+      .searchTerm {
+        width: 1000px;
+        border: 3px solid #00b4cc;
+        border-right: none;
+        padding: 5px;
+        height: 36px;
+        border-radius: 5px 0 0 5px;
+        outline: none;
+        color: #9dbfaf;
+      }
+
+      .searchTerm:focus {
+        color: #00b4cc;
+      }
+
+      .searchButton {
+        width: 40px;
+        height: 36px;
+        border: 1px solid #00b4cc;
+        background: #00b4cc;
+        text-align: center;
+        color: #fff;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+        font-size: 20px;
+      }
+
+      /*Resize the wrap to see the search bar change!*/
+      .wrap {
+        width: 50%;
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #movie {
+        top: 40%;
+        position: absolute;
+      }
+
+      .container {
+        position: absolute;
+        top: 30%;
+        left: 10%;
+        width: 85%;
+        height: 100%;
+        background: #fff;
+        border-radius: 6px;
+        padding: 20px 60px 30px 40px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+      }
+      .container .content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .container .content .right-side {
+        width: 75%;
+        margin-left: 75px;
+      }
+      .content .right-side .topic-text {
+        font-size: 23px;
+        font-weight: 600;
+        color: #3e2093;
+      }
+      .right-side .input-box {
+        height: 50px;
+        width: 100%;
+        margin: 12px 0;
+      }
+
+      @media (max-width: 950px) {
+        .container {
+          width: 90%;
+          padding: 30px 40px 40px 35px;
+        }
+        .container .content .right-side {
+          width: 75%;
+          margin-left: 55px;
+        }
+      }
+      @media (max-width: 820px) {
+        .container {
+          margin: 40px 0;
+          height: 100%;
+        }
+        .container .content {
+          flex-direction: column-reverse;
+        }
+        .container .content .right-side {
+          width: 100%;
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-light bg-light">
+      <a
+        class="navbar-brand add"
+        href="http://moviewebsite.s3-website.ap-south-1.amazonaws.com/"
+      >
+        <img
+          src="https://cdn.pixabay.com/photo/2016/03/31/18/36/cinema-1294496__340.png"
+          width="30"
+          height="30"
+          class="d-inline-block align-top"
+          alt=""
+        />
+        Add movie
+      </a>
+    </nav>
+
+    <div class="wrap">
+      <div class="search">
+        <input
+          type="text"
+          name="movie"
+          class="searchTerm"
+          placeholder="Enter movie name"
+          required="required"
+          onfocus="this.placeholder=''"
+          onblur="this.placeholder='Enter movie name'"
+          id="searchKey"
+          data-bind="value : searchKey"
+        />
+        <button
+          class="searchButton"
+          value="GetCustomerDetails"
+          data-bind="click: $root.getCustomerDetails()"
+          type="button"
+        >
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+    </div>
+    <div class="container">
+      <div class="content">
+        <div class="right-side">
+          <div class="topic-text">Movie Review</div>
+          <form action="#">
+            <div class="input-box">
+              <label class="title">Movie: </label>
+              <label
+                class="data"
+                id="firstName"
+                data-bind="text: emailId"
+              ></label>
+            </div>
+            <div class="input-box">
+              <label class="title">Added by: </label>
+              <label
+                class="data data_added"
+                id="lastName"
+                data-bind="text: firstName"
+              ></label>
+            </div>
+            <div class="input-box">
+              <label class="title">Review: </label>
+              <label
+                class="data_review"
+                id="emailId"
+                data-bind="text: lastName"
+              ></label>
+            </div>
+
+            <!-- <div class="input-box message-box"></div>
+            <div class="button">
+              <input
+                type="button"
+                value="Submit"
+                data-bind="click: $root.SaveCustomerDetails"
+              />
+              <span
+                style="color: darkolivegreen"
+                data-bind="text: SuccessMessage"
+              ></span>
+            </div> -->
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
